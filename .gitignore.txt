@@ -1,0 +1,5 @@
+.idea/
+node_modules/
+
+trading-bot.iml
+.env
