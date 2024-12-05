@@ -6,10 +6,38 @@ const binance = new Binance().options({
     APISECRET: process.env.API_SECRET
 });
 
-binance.prices('BTCUSDT', (error, prices) => {
-    if (error) {
-        console.error('Error fetching prices:', error);
-    } else {
-        console.log('Current BTC/USDT price:', prices.BTCUSDT);
-    }
-});
+let purchasePrice = 0;
+
+function trade() {
+    binance.prices('BTCUSDT', (error, prices) => {
+        if (error) {
+            console.error('Błąd podczas pobierania ceny:', error);
+            return;
+        }
+
+        const currentPrice = parseFloat(prices.BTCUSDT);
+        console.log(`Aktualna cena BTC/USDT: ${currentPrice} USDT`);
+
+        if (purchasePrice === 0) {
+            purchasePrice = currentPrice;
+            binance.marketBuy('BTCUSDT', 0.001, (error, response) => {
+                if (error) {
+                    console.error('Błąd podczas kupowania BTC:', error.body);
+                } else {
+                    console.log(`Kupiono BTC za ${purchasePrice} USDT`);
+                }
+            });
+        } else if (currentPrice >= purchasePrice * 1.01) {
+            binance.marketSell('BTCUSDT', 0.001, (error, response) => {
+                if (error) {
+                    console.error('Błąd podczas sprzedawania BTC:', error.body);
+                } else {
+                    console.log(`Sprzedano BTC za ${currentPrice} USDT`);
+                    purchasePrice = 0; // Reset ceny zakupu
+                }
+            });
+        }
+    });
+}
+
+setInterval(trade, 6000);
