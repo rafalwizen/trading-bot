@@ -10,6 +10,7 @@ let startPrice = 0; // Starting price for BTC
 let purchasePrice = []; // List of purchase prices
 const maxTrades = 20; // Maximum number of trades
 const tradeAmount = baseAmount * 0.05; // 5% of base amount for each trade
+const tradePercentage = 1; // Set the trading percentage (1% for buying and selling)
 const simulationResults = [];
 
 // Simulate trading
@@ -27,15 +28,15 @@ for (const dataPoint of historicalData) {
         continue;
     }
 
-    // Buy BTC if the price drops 1% from the last purchase price
-    if (purchasePrice.length > 0 && currentPrice <= purchasePrice[purchasePrice.length - 1] * 0.99 && purchasePrice.length < maxTrades) {
+    // Buy BTC if the price drops by tradePercentage% from the last purchase price
+    if (purchasePrice.length > 0 && currentPrice <= purchasePrice[purchasePrice.length - 1] * (1 - tradePercentage / 100) && purchasePrice.length < maxTrades) {
         purchasePrice.push(currentPrice); // Add purchase price to the list
         currentBalance -= tradeAmount;
         console.log(
             `Bought BTC for ${tradeAmount} USDT at ${currentPrice} USDT. Remaining balance: ${currentBalance} USDT`
         );
-    } else if (purchasePrice.length === 0 && currentPrice <= startPrice * 0.99 && purchasePrice.length < maxTrades) {
-        // If no purchases yet, buy BTC if the price drops 1% from the starting price
+    } else if (purchasePrice.length === 0 && currentPrice <= startPrice * (1 - tradePercentage / 100) && purchasePrice.length < maxTrades) {
+        // If no purchases yet, buy BTC if the price drops by tradePercentage% from the starting price
         purchasePrice.push(currentPrice); // Add purchase price to the list
         currentBalance -= tradeAmount;
         console.log(
@@ -43,10 +44,10 @@ for (const dataPoint of historicalData) {
         );
     }
 
-    // Sell BTC if the price rises 1% from the purchase price
+    // Sell BTC if the price rises by tradePercentage% from the purchase price
     for (let i = purchasePrice.length - 1; i >= 0; i--) {
-        if (currentPrice >= purchasePrice[i] * 1.01) {
-            const profit = tradeAmount * 1.01; // Calculate the sale amount with 1% profit
+        if (currentPrice >= purchasePrice[i] * (1 + tradePercentage / 100)) {
+            const profit = tradeAmount * (1 + tradePercentage / 100); // Calculate the sale amount with profit
             currentBalance += profit; // Add profit to the balance
             console.log(
                 `Sold BTC for ${profit} USDT at ${currentPrice} USDT. New balance: ${currentBalance} USDT`
@@ -72,7 +73,6 @@ for (const dataPoint of historicalData) {
         purchases: [...purchasePrice],
     });
 }
-
 
 // Save simulation results to a file
 fs.writeFileSync('simulation_results.json', JSON.stringify(simulationResults, null, 2));
