@@ -55,9 +55,9 @@ async function fetchHistoricalData(symbol, interval, startTime, endTime, outputF
 
 // Parameters for fetching data
 const symbol = 'BTCUSDT'; // Trading pair
-const interval = '1m'; // Candle interval (e.g., '1m', '5m', '1h', '1d')
-const startTime = new Date('2023-01-01').getTime(); // Start date (in ms)
-const endTime = new Date('2023-01-10').getTime(); // End date (in ms)
+const interval = '1h'; // Candle interval (e.g., '1m', '5m', '1h', '1d')
+const startTime = new Date('2024-11-01').getTime(); // Start date (in ms)
+const endTime = new Date('2024-11-30').getTime(); // End date (in ms)
 const outputFile = 'historical_data.json'; // Output file name
 
 // Call the function
