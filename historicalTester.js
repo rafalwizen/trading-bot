@@ -8,8 +8,8 @@ let baseAmount = 1000; // Initial balance in USDT
 let currentBalance = 1000; // Current balance
 let startPrice = 0; // Starting price for BTC
 let purchasePrice = []; // List of purchase prices
-const maxTrades = 20; // Maximum number of trades
-const tradeAmount = baseAmount * 0.05; // 5% of base amount for each trade
+const maxTrades = 2; // Maximum number of trades
+let tradeAmount = baseAmount * 0.5; // 5% of base amount for each trade
 const tradePercentage = 1; // Set the trading percentage (1% for buying and selling)
 const simulationResults = [];
 
@@ -18,8 +18,8 @@ for (const dataPoint of historicalData) {
     const currentPrice = dataPoint.close; // Use the 'close' price from historical data
 
     // Log the current iteration details
-    console.log(`\n-> Start price: ${startPrice} USDT`);
-    console.log(`Current BTC price: ${currentPrice} USDT`);
+    // console.log(`\n-> Start price: ${startPrice} USDT`);
+    // console.log(`Current BTC price: ${currentPrice} USDT`);
 
     // Set the starting price at the first iteration
     if (startPrice < currentPrice && purchasePrice.length === 0) {
@@ -49,9 +49,9 @@ for (const dataPoint of historicalData) {
         if (currentPrice >= purchasePrice[i] * (1 + tradePercentage / 100)) {
             const profit = tradeAmount * (1 + tradePercentage / 100); // Calculate the sale amount with profit
             currentBalance += profit; // Add profit to the balance
-            console.log(
-                `Sold BTC for ${profit} USDT at ${currentPrice} USDT. New balance: ${currentBalance} USDT`
-            );
+            // console.log(
+            //     `Sold BTC for ${profit} USDT at ${currentPrice} USDT. New balance: ${currentBalance} USDT`
+            // );
             purchasePrice.splice(i, 1); // Remove the transaction from the list
         }
     }
@@ -59,6 +59,7 @@ for (const dataPoint of historicalData) {
     // Update base amount and starting price if balance increases
     if (currentBalance > baseAmount) {
         baseAmount = currentBalance;
+        tradeAmount = baseAmount * 0.5;
         startPrice = currentPrice;
         console.log(
             `Updated base amount to ${baseAmount} USDT. New starting price: ${startPrice} USDT`
